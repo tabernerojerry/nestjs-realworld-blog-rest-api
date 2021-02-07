@@ -1,0 +1,10 @@
+{
+  // Enables sort before each save of the document
+  "importSorter.generalConfiguration.sortOnBeforeSave": false,
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "files.trimTrailingWhitespace": true,
+  "editor.trimAutoWhitespace": true,
+  "editor.detectIndentation": false,
+  "editor.insertSpaces": true
+}
