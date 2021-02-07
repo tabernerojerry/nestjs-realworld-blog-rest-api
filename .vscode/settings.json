@@ -1,6 +1,6 @@
 {
   // Enables sort before each save of the document
-  "importSorter.generalConfiguration.sortOnBeforeSave": false,
+  "importSorter.generalConfiguration.sortOnBeforeSave": true,
   "editor.formatOnSave": true,
   "editor.tabSize": 2,
   "files.trimTrailingWhitespace": true,
