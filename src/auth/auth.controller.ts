@@ -8,9 +8,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post()
-  public async register(
-    @Body(ValidationPipe) registerDto: RegisterDTO,
-  ): Promise<any> {
+  public async register(@Body(ValidationPipe) registerDto: RegisterDTO): Promise<any> {
     return this.authService.register(registerDto);
   }
 
