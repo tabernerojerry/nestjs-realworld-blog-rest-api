@@ -3,9 +3,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 import { databaseConfig } from '../configs';
 
-export const databaseConfigFactory = (
-  dbConfig: ConfigType<typeof databaseConfig>,
-): TypeOrmModuleOptions => ({
+export const databaseConfigFactory = (dbConfig: ConfigType<typeof databaseConfig>): TypeOrmModuleOptions => ({
   type: dbConfig.type,
   host: dbConfig.host,
   port: dbConfig.port,

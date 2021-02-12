@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import {
     ConflictException, Injectable, InternalServerErrorException, UnauthorizedException
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { LoginDTO, RegisterDTO } from './dto';
@@ -13,12 +14,18 @@ export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly jwtService: JwtService,
   ) {}
 
-  public async register(registerDto: RegisterDTO): Promise<UserEntity> {
+  public async register(registerDto: RegisterDTO): Promise<any> {
     try {
       const user = this.userRepository.create(registerDto);
-      return await this.userRepository.save(user);
+      await this.userRepository.save(user);
+
+      const jwtPayload = { id: user.id, username: user.username };
+      const token = await this.jwtService.signAsync(jwtPayload);
+
+      return { user: { ...user.toJSON(), token } };
     } catch (error) {
       if (error.code === '23505') {
         throw new ConflictException('Username has already been taken.');
@@ -27,7 +34,7 @@ export class AuthService {
     }
   }
 
-  public async login({ email, password }: LoginDTO): Promise<UserEntity> {
+  public async login({ email, password }: LoginDTO): Promise<any> {
     try {
       const user = await this.userRepository.findOne({ where: { email } });
       const isValid = await user.comparePassword(password);
@@ -36,7 +43,10 @@ export class AuthService {
         throw new UnauthorizedException('Invalid credentials.');
       }
 
-      return user;
+      const jwtPayload = { id: user.id, username: user.username };
+      const token = this.jwtService.sign(jwtPayload);
+
+      return { user: { ...user.toJSON(), token } };
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials.');
     }

@@ -8,7 +8,7 @@ import { databaseConfig } from '../configs';
 export class DatabaseConfigService implements TypeOrmOptionsFactory {
   constructor(
     @Inject(databaseConfig.KEY)
-    private dbConfig: ConfigType<typeof databaseConfig>,
+    private readonly dbConfig: ConfigType<typeof databaseConfig>,
   ) {}
 
   createTypeOrmOptions = (): TypeOrmModuleOptions => ({
