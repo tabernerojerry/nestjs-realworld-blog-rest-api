@@ -7,5 +7,6 @@ import { AppModule } from './app';
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const port = configService.get<number>('app.port');
+  app.setGlobalPrefix('api');
   await app.listen(port);
 })();
