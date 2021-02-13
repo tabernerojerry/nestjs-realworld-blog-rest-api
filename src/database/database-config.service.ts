@@ -19,7 +19,7 @@ export class DatabaseConfigService implements TypeOrmOptionsFactory {
     password: this.dbConfig.password,
     database: this.dbConfig.database,
     synchronize: true,
-    dropSchema: false,
+    dropSchema: false, //NOTE: Set this option to false in production,
     logging: true,
     autoLoadEntities: true,
   });

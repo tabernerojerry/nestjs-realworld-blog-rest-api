@@ -43,7 +43,6 @@ export class AuthService {
 
       // generate and sign token
       const token = this.createToken(user);
-      console.log('token', token);
 
       return { user: { ...user.toJSON(), token } };
     } catch (error) {

@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
 
 import { UserEntity } from '../auth/entities';
 import { CurrentUser } from '../common/decorators';
@@ -15,6 +15,7 @@ export class ProfilesController {
   }
 
   @Post('/:username/follow')
+  @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   public async followUser(@CurrentUser() currentUser: UserEntity, @Param('username') username: string): Promise<any> {
     return await this.profilesService.followUser(currentUser, username);

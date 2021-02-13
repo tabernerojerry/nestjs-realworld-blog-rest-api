@@ -19,7 +19,7 @@ export class ProfilesService {
       throw new NotFoundException();
     }
 
-    return { profile: user };
+    return { profile: { ...user.toJSON(), following: null } };
   }
 
   public async followUser(currentUser: UserEntity, username: string): Promise<any> {
