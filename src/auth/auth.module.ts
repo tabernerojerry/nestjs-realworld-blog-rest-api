@@ -5,9 +5,9 @@ import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { jsonWebTokenConfig } from '../configs';
+import { UserEntity } from '../data/entities';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { UserEntity } from './entities';
 import { JwtConfigService } from './jwt-config.service';
 import { JwtStrategyService } from './jwt-strategy.service';
 
@@ -22,6 +22,6 @@ import { JwtStrategyService } from './jwt-strategy.service';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategyService],
-  exports: [PassportModule, JwtStrategyService],
+  exports: [PassportModule, JwtStrategyService, AuthService],
 })
 export class AuthModule {}

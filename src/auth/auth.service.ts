@@ -4,8 +4,8 @@ import { ConflictException, Injectable, InternalServerErrorException, Unauthoriz
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { LoginDTO, RegisterDTO } from './dto';
-import { UserEntity } from './entities';
+import { LoginDto, RegisterDto } from '../data/dto';
+import { UserEntity } from '../data/entities';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +15,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  public async register(registerDto: RegisterDTO): Promise<any> {
+  public async register(registerDto: RegisterDto): Promise<any> {
     try {
       const user = this.userRepository.create(registerDto);
       await this.userRepository.save(user);
@@ -32,7 +32,7 @@ export class AuthService {
     }
   }
 
-  public async login({ email, password }: LoginDTO): Promise<any> {
+  public async login({ email, password }: LoginDto): Promise<any> {
     try {
       const user = await this.userRepository.findOne({ where: { email } });
       const isValid = await user.comparePassword(password);
@@ -50,7 +50,7 @@ export class AuthService {
     }
   }
 
-  private createToken(user: UserEntity): string {
+  public createToken(user: UserEntity): string {
     const jwtPayload = { id: user.id, username: user.username };
     return this.jwtService.sign(jwtPayload);
   }

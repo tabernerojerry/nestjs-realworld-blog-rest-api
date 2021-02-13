@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { UserEntity } from '../auth/entities';
+import { UserEntity } from '../data/entities';
 
 @Injectable()
 export class ProfilesService {
@@ -24,6 +24,11 @@ export class ProfilesService {
 
   public async followUser(currentUser: UserEntity, username: string): Promise<any> {
     const user = await this.userRepository.findOne({ where: { username }, relations: ['followers'] });
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
     user.followers.push(currentUser);
     await user.save();
     return { profile: user.toProfile(currentUser) };
@@ -31,6 +36,11 @@ export class ProfilesService {
 
   public async unfollowUser(currentUser: UserEntity, username: string): Promise<any> {
     const user = await this.userRepository.findOne({ where: { username }, relations: ['followers'] });
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
     user.followers = user.followers.filter((follower) => follower !== currentUser);
     await user.save();
     return { profile: user.toProfile(currentUser) };

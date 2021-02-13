@@ -1,34 +1,42 @@
 import { Repository } from 'typeorm';
 
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { UserEntity } from '../auth/entities';
-import { UpdateUserDTO } from './dto';
+import { AuthService } from '../auth';
+import { UpdateUserDto } from '../data/dto';
+import { UserEntity } from '../data/entities';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly authService: AuthService,
   ) {}
 
-  public async findByUsername(username: string): Promise<UserEntity> {
+  public async findByUsername(username: string): Promise<any> {
     const user = await this.userRepository.findOne({ where: { username } });
 
     if (!user) {
       throw new NotFoundException();
     }
 
-    return user;
+    const token = this.authService.createToken(user);
+
+    return { user: { ...user.toJSON(), token } };
   }
 
-  public async updateUser(username: string, updateUserDto: UpdateUserDTO): Promise<UserEntity> {
-    try {
-      await this.userRepository.update({ username }, updateUserDto);
-      return await this.findByUsername(username);
-    } catch (e) {
-      throw new InternalServerErrorException();
+  public async updateUser(username: string, updateUserDto: UpdateUserDto): Promise<any> {
+    const user = await this.userRepository.preload({ username, ...updateUserDto });
+
+    if (!user) {
+      throw new NotFoundException();
     }
+
+    const newUser = await this.userRepository.save(user);
+    const token = this.authService.createToken(newUser);
+
+    return { user: { ...newUser.toJSON, token } };
   }
 }

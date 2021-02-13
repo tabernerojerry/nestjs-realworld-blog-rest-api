@@ -2,7 +2,7 @@ import { Body, Controller, Get, Put, UseGuards, ValidationPipe } from '@nestjs/c
 
 import { CurrentUser } from '../common/decorators';
 import { JwtAuthGuard } from '../common/guards';
-import { UpdateUserDTO } from './dto';
+import { UpdateUserDto } from '../data/dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -19,7 +19,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   public async updateUser(
     @CurrentUser('username') username: string,
-    @Body(new ValidationPipe({ transform: true, whitelist: true })) updateUserDto: UpdateUserDTO,
+    @Body(new ValidationPipe({ transform: true, whitelist: true })) updateUserDto: UpdateUserDto,
   ): Promise<any> {
     return await this.userService.updateUser(username, updateUserDto);
   }

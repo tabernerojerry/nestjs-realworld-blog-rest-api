@@ -1,8 +1,8 @@
 import { Controller, Delete, Get, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
 
-import { UserEntity } from '../auth/entities';
 import { CurrentUser } from '../common/decorators';
 import { JwtAuthGuard } from '../common/guards';
+import { UserEntity } from '../data/entities';
 import { ProfilesService } from './profiles.service';
 
 @Controller('profiles')

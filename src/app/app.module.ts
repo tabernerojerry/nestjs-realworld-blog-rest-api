@@ -6,8 +6,6 @@ import { appConfig } from '../configs';
 import { DatabaseModule } from '../database';
 import { ProfilesModule } from '../profiles/profiles.module';
 import { UserModule } from '../user';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -19,7 +17,5 @@ import { AppService } from './app.service';
     UserModule,
     ProfilesModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
