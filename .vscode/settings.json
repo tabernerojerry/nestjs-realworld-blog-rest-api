@@ -1,11 +1,15 @@
 {
-  // Enables sort before each save of the document
   "importSorter.generalConfiguration.sortOnBeforeSave": true,
+  "importSorter.importStringConfiguration.maximumNumberOfImportExpressionsPerLine.type": "newLineEachExpressionAfterCountLimitExceptIfOnlyOne",
+  "importSorter.importStringConfiguration.maximumNumberOfImportExpressionsPerLine.count": 120,
+  "importSorter.importStringConfiguration.tabSize": 2,
+  "importSorter.sortConfiguration.removeUnusedImports": true,
+
   "editor.formatOnSave": true,
+
   "editor.tabSize": 2,
   "files.trimTrailingWhitespace": true,
   "editor.trimAutoWhitespace": true,
   "editor.detectIndentation": false,
-  "editor.insertSpaces": true,
-  "prettier.printWidth": 120
+  "editor.insertSpaces": true
 }

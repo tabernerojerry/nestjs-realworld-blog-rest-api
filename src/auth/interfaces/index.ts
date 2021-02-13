@@ -1,1 +1,1 @@
-export { IAuthPayload } from './auth-payload.interface';
+export { IJwtPayload } from './jwt-payload.interface';

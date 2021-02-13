@@ -1,8 +1,6 @@
 import { Repository } from 'typeorm';
 
-import {
-    ConflictException, Injectable, InternalServerErrorException, UnauthorizedException
-} from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -22,8 +20,8 @@ export class AuthService {
       const user = this.userRepository.create(registerDto);
       await this.userRepository.save(user);
 
-      const jwtPayload = { id: user.id, username: user.username };
-      const token = await this.jwtService.signAsync(jwtPayload);
+      // generate and sign token
+      const token = this.createToken(user);
 
       return { user: { ...user.toJSON(), token } };
     } catch (error) {
@@ -43,12 +41,18 @@ export class AuthService {
         throw new UnauthorizedException('Invalid credentials.');
       }
 
-      const jwtPayload = { id: user.id, username: user.username };
-      const token = this.jwtService.sign(jwtPayload);
+      // generate and sign token
+      const token = this.createToken(user);
+      console.log('token', token);
 
       return { user: { ...user.toJSON(), token } };
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials.');
     }
+  }
+
+  private createToken(user: UserEntity): string {
+    const jwtPayload = { id: user.id, username: user.username };
+    return this.jwtService.sign(jwtPayload);
   }
 }

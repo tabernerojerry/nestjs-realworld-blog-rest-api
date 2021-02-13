@@ -14,7 +14,7 @@ import { JwtStrategyService } from './jwt-strategy.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule.forFeature(jsonWebTokenConfig)],
       useClass: JwtConfigService,
@@ -22,5 +22,6 @@ import { JwtStrategyService } from './jwt-strategy.service';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategyService],
+  exports: [PassportModule, JwtStrategyService],
 })
 export class AuthModule {}
