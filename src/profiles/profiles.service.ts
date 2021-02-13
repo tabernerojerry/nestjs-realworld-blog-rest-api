@@ -19,6 +19,20 @@ export class ProfilesService {
       throw new NotFoundException();
     }
 
-    return { profiles: user };
+    return { profile: user };
+  }
+
+  public async followUser(currentUser: UserEntity, username: string): Promise<any> {
+    const user = await this.userRepository.findOne({ where: { username }, relations: ['followers'] });
+    user.followers.push(currentUser);
+    await user.save();
+    return { profile: user.toProfile(currentUser) };
+  }
+
+  public async unfollowUser(currentUser: UserEntity, username: string): Promise<any> {
+    const user = await this.userRepository.findOne({ where: { username }, relations: ['followers'] });
+    user.followers = user.followers.filter((follower) => follower !== currentUser);
+    await user.save();
+    return { profile: user.toProfile(currentUser) };
   }
 }

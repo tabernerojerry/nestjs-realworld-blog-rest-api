@@ -1,6 +1,6 @@
 import * as argon2 from 'argon2';
 import { classToPlain, Exclude } from 'class-transformer';
-import { BeforeInsert, Column, Entity } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 import { AbstractEntity } from './abstract.entity';
 
@@ -22,6 +22,13 @@ export class UserEntity extends AbstractEntity {
   @Exclude()
   password: string;
 
+  @JoinTable()
+  @ManyToMany((type) => UserEntity, (user) => user.follower)
+  followers: UserEntity[];
+
+  @ManyToMany((type) => UserEntity, (user) => user.followers)
+  follower: UserEntity[];
+
   @BeforeInsert()
   async hashPassword(): Promise<void> {
     this.password = await argon2.hash(this.password, { type: argon2.argon2id });
@@ -33,5 +40,12 @@ export class UserEntity extends AbstractEntity {
 
   toJSON(): Record<string, any> {
     return classToPlain(this);
+  }
+
+  toProfile(currentUser: UserEntity) {
+    const following = this.followers.includes(currentUser);
+    const profile = this.toJSON();
+    delete profile.followers;
+    return { ...profile, following };
   }
 }
