@@ -28,15 +28,11 @@ export class UserService {
   }
 
   public async updateUser(username: string, updateUserDto: UpdateUserDto): Promise<any> {
-    const user = await this.userRepository.preload({ username, ...updateUserDto });
+    await this.userRepository.update({ username }, updateUserDto);
+    const user = await this.userRepository.findOne({ where: { username } });
 
-    if (!user) {
-      throw new NotFoundException();
-    }
+    const token = this.authService.createToken(user);
 
-    const newUser = await this.userRepository.save(user);
-    const token = this.authService.createToken(newUser);
-
-    return { user: { ...newUser.toJSON, token } };
+    return { user: { ...user.toJSON(), token } };
   }
 }

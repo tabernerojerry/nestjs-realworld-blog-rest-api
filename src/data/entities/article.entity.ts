@@ -1,6 +1,6 @@
 import { classToPlain } from 'class-transformer';
-import slug from 'slug';
-import { BeforeInsert, Column, Entity, JoinColumn, ManyToMany, ManyToOne, RelationCount } from 'typeorm';
+import * as slug from 'slug';
+import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, ManyToOne, RelationCount } from 'typeorm';
 
 import { AbstractEntity } from './abstract.entity';
 import { UserEntity } from './user.entity';
@@ -19,12 +19,12 @@ export class ArticleEntity extends AbstractEntity {
   @Column()
   body: string;
 
-  @ManyToOne((type) => UserEntity, (user) => user.articles, { eager: true })
-  author: ArticleEntity[];
-
   @ManyToMany((type) => UserEntity, (user) => user.favorites, { eager: true })
-  @JoinColumn()
+  @JoinTable()
   favoritedBy: UserEntity[];
+
+  @ManyToOne((type) => UserEntity, (user) => user.articles, { eager: true })
+  author: UserEntity;
 
   @RelationCount((article: ArticleEntity) => article.favoritedBy)
   favoritesCount: number;
@@ -34,14 +34,14 @@ export class ArticleEntity extends AbstractEntity {
 
   @BeforeInsert()
   generateSlug() {
-    this.slug = slug(this.title, { lower: true }) + '-' + ((Math.random() * Math.pow(36, 6)) | 0).toString();
+    this.slug = slug(this.title, { lower: true }) + '-' + ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
   }
 
   toJSON(): Record<string, any> {
     return classToPlain(this);
   }
 
-  toArticle(user: UserEntity) {
+  toArticle(user?: UserEntity) {
     let favorited = null;
 
     if (user) {

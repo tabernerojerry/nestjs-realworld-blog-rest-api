@@ -1,6 +1,6 @@
 import * as argon2 from 'argon2';
 import { classToPlain, Exclude } from 'class-transformer';
-import { BeforeInsert, Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from './abstract.entity';
 import { ArticleEntity } from './article.entity';
@@ -34,7 +34,6 @@ export class UserEntity extends AbstractEntity {
   articles: ArticleEntity[];
 
   @ManyToMany((type) => ArticleEntity, (article) => article.favoritedBy)
-  @JoinColumn()
   favorites: ArticleEntity[];
 
   @BeforeInsert()
