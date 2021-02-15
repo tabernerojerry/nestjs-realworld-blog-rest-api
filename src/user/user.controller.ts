@@ -19,8 +19,8 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   public async updateUser(
     @CurrentUser('username') username: string,
-    @Body(new ValidationPipe({ transform: true, whitelist: true })) updateUserDto: { user: UpdateUserDto },
+    @Body('user', new ValidationPipe({ transform: true, whitelist: true })) updateUserDto: UpdateUserDto,
   ): Promise<any> {
-    return await this.userService.updateUser(username, updateUserDto.user);
+    return await this.userService.updateUser(username, updateUserDto);
   }
 }

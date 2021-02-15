@@ -20,9 +20,9 @@ export class ArticlesController {
   @UseGuards(JwtAuthGuard)
   public async createArticle(
     @CurrentUser() currentUser: UserEntity,
-    @Body(ValidationPipe) createArticleDto: { article: CreateArticleDto },
+    @Body('article', ValidationPipe) createArticleDto: CreateArticleDto,
   ): Promise<any> {
-    const article = await this.articleService.createArticle(currentUser, createArticleDto.article);
+    const article = await this.articleService.createArticle(currentUser, createArticleDto);
     return { article };
   }
 
@@ -31,9 +31,9 @@ export class ArticlesController {
   public async updateArticle(
     @Param('slug') slug: string,
     @CurrentUser() currentUser: UserEntity,
-    @Body(ValidationPipe) updateArticleDto: { article: UpdateArticleDto },
+    @Body('article', ValidationPipe) updateArticleDto: UpdateArticleDto,
   ): Promise<any> {
-    const article = await this.articleService.updateArticle(slug, currentUser, updateArticleDto.article);
+    const article = await this.articleService.updateArticle(slug, currentUser, updateArticleDto);
     return { article };
   }
 
