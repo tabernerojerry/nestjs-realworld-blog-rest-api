@@ -1,8 +1,9 @@
 import { classToPlain } from 'class-transformer';
 import * as slug from 'slug';
-import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, ManyToOne, RelationCount } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, RelationCount } from 'typeorm';
 
 import { AbstractEntity } from './abstract.entity';
+import { CommentEntity } from './comment.entity';
 import { UserEntity } from './user.entity';
 
 @Entity('articles')
@@ -32,6 +33,9 @@ export class ArticleEntity extends AbstractEntity {
   @Column('simple-array')
   tagList: string[];
 
+  @OneToMany((type) => CommentEntity, (comment) => comment.article)
+  comments: CommentEntity[];
+
   @BeforeInsert()
   generateSlug() {
     this.slug = slug(this.title, { lower: true }) + '-' + ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
@@ -45,7 +49,7 @@ export class ArticleEntity extends AbstractEntity {
     let favorited = null;
 
     if (user) {
-      favorited = this.favoritedBy.includes(user);
+      favorited = this.favoritedBy.map(({ id }) => id).includes(user.id);
     }
 
     const article = this.toJSON();

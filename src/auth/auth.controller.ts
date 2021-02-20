@@ -14,6 +14,6 @@ export class AuthController {
 
   @Post('/login')
   public async login(@Body('user', ValidationPipe) loginDto: LoginDto): Promise<any> {
-    return this.authService.login(loginDto);
+    return await this.authService.login(loginDto);
   }
 }
