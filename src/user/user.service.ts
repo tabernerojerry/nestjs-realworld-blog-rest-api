@@ -1,11 +1,12 @@
 import { Repository } from 'typeorm';
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { AuthService } from '../auth';
 import { UpdateUserDto } from '../data/dto';
 import { UserEntity } from '../data/entities';
+import { IAuthResponse } from '../data/interfaces';
 
 @Injectable()
 export class UserService {
@@ -15,24 +16,24 @@ export class UserService {
     private readonly authService: AuthService,
   ) {}
 
-  public async findByUsername(username: string): Promise<any> {
+  public async findCurrentUser(username: string): Promise<IAuthResponse> {
     const user = await this.userRepository.findOne({ where: { username } });
 
     if (!user) {
-      throw new NotFoundException();
+      throw new UnauthorizedException();
     }
 
     const token = this.authService.createToken(user);
 
-    return { user: { ...user.toJSON(), token } };
+    return { ...user.toJSON(), token };
   }
 
-  public async updateUser(username: string, updateUserDto: UpdateUserDto): Promise<any> {
+  public async updateUser(username: string, updateUserDto: UpdateUserDto): Promise<IAuthResponse> {
     await this.userRepository.update({ username }, updateUserDto);
     const user = await this.userRepository.findOne({ where: { username } });
 
     const token = this.authService.createToken(user);
 
-    return { user: { ...user.toJSON(), token } };
+    return { ...user.toJSON(), token };
   }
 }

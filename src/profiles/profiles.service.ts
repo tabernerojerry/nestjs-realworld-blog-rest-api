@@ -4,6 +4,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { UserEntity } from '../data/entities';
+import { IProfileResponse } from '../data/interfaces';
 
 @Injectable()
 export class ProfilesService {
@@ -12,17 +13,17 @@ export class ProfilesService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  public async findByUsername(username: string): Promise<any> {
+  public async findByUsername(username: string, currentUser?: UserEntity): Promise<IProfileResponse> {
     const user = await this.userRepository.findOne({ where: { username } });
 
     if (!user) {
       throw new NotFoundException();
     }
 
-    return { profile: { ...user.toJSON(), following: null } };
+    return user.toProfile(currentUser);
   }
 
-  public async followUser(currentUser: UserEntity, username: string): Promise<any> {
+  public async followUser(currentUser: UserEntity, username: string): Promise<IProfileResponse> {
     const user = await this.userRepository.findOne({ where: { username }, relations: ['followers'] });
 
     if (!user) {
@@ -31,10 +32,10 @@ export class ProfilesService {
 
     user.followers.push(currentUser);
     await user.save();
-    return { profile: user.toProfile(currentUser) };
+    return user.toProfile(currentUser);
   }
 
-  public async unfollowUser(currentUser: UserEntity, username: string): Promise<any> {
+  public async unfollowUser(currentUser: UserEntity, username: string): Promise<IProfileResponse> {
     const user = await this.userRepository.findOne({ where: { username }, relations: ['followers'] });
 
     if (!user) {
@@ -43,6 +44,6 @@ export class ProfilesService {
 
     user.followers = user.followers.filter((follower) => follower !== currentUser);
     await user.save();
-    return { profile: user.toProfile(currentUser) };
+    return user.toProfile(currentUser);
   }
 }

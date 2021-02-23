@@ -2,6 +2,7 @@ import { classToPlain } from 'class-transformer';
 import * as slug from 'slug';
 import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, RelationCount } from 'typeorm';
 
+import { IArticleResponse } from '../interfaces';
 import { AbstractEntity } from './abstract.entity';
 import { CommentEntity } from './comment.entity';
 import { UserEntity } from './user.entity';
@@ -41,18 +42,16 @@ export class ArticleEntity extends AbstractEntity {
     this.slug = slug(this.title, { lower: true }) + '-' + ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): any {
     return classToPlain(this);
   }
 
-  toArticle(user?: UserEntity) {
-    let favorited = null;
-
-    if (user) {
-      favorited = this.favoritedBy.map(({ id }) => id).includes(user.id);
-    }
-
+  toArticle(currentUser?: UserEntity): IArticleResponse {
+    let favorited = false;
     const article = this.toJSON();
+    if (!!currentUser && !!article.favoritedBy.length) {
+      favorited = article.favoritedBy.map((user: UserEntity) => user.id).includes(currentUser.id);
+    }
     delete article.favoritedBy;
     return { ...article, favorited };
   }

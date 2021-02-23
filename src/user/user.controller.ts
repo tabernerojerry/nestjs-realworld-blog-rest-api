@@ -3,6 +3,7 @@ import { Body, Controller, Get, Put, UseGuards, ValidationPipe } from '@nestjs/c
 import { CurrentUser } from '../common/decorators';
 import { JwtAuthGuard } from '../common/guards';
 import { UpdateUserDto } from '../data/dto';
+import { IAuthResponse, IResponseObject } from '../data/interfaces';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -11,8 +12,11 @@ export class UserController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  public async findCurrentUser(@CurrentUser('username') username: string): Promise<any> {
-    return await this.userService.findByUsername(username);
+  public async findCurrentUser(
+    @CurrentUser('username') username: string,
+  ): Promise<IResponseObject<'user', IAuthResponse>> {
+    const user = await this.userService.findCurrentUser(username);
+    return { user };
   }
 
   @Put()
@@ -20,7 +24,8 @@ export class UserController {
   public async updateUser(
     @CurrentUser('username') username: string,
     @Body('user', new ValidationPipe({ transform: true, whitelist: true })) updateUserDto: UpdateUserDto,
-  ): Promise<any> {
-    return await this.userService.updateUser(username, updateUserDto);
+  ): Promise<IResponseObject<'user', IAuthResponse>> {
+    const user = await this.userService.updateUser(username, updateUserDto);
+    return { user };
   }
 }

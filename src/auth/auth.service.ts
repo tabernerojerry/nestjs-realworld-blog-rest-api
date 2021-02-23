@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { LoginDto, RegisterDto } from '../data/dto';
 import { UserEntity } from '../data/entities';
+import { IAuthResponse } from '../data/interfaces';
 
 @Injectable()
 export class AuthService {
@@ -15,15 +16,15 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  public async register(registerDto: RegisterDto): Promise<any> {
+  public async register(registerDto: RegisterDto): Promise<IAuthResponse> {
     try {
       const user = this.userRepository.create(registerDto);
-      await this.userRepository.save(user);
+      await user.save();
 
       // generate and sign token
       const token = this.createToken(user);
 
-      return { user: { ...user.toJSON(), token } };
+      return { ...user.toJSON(), token };
     } catch (error) {
       if (error.code === '23505') {
         throw new ConflictException('Username has already been taken.');
@@ -32,7 +33,7 @@ export class AuthService {
     }
   }
 
-  public async login({ email, password }: LoginDto): Promise<any> {
+  public async login({ email, password }: LoginDto): Promise<IAuthResponse> {
     try {
       const user = await this.userRepository.findOne({ where: { email } });
       const isValid = await user.comparePassword(password);
@@ -44,7 +45,7 @@ export class AuthService {
       // generate and sign token
       const token = this.createToken(user);
 
-      return { user: { ...user.toJSON(), token } };
+      return { ...user.toJSON(), token };
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials.');
     }

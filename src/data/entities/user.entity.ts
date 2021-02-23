@@ -2,6 +2,7 @@ import * as argon2 from 'argon2';
 import { classToPlain, Exclude } from 'class-transformer';
 import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
+import { IProfileResponse } from '../interfaces';
 import { AbstractEntity } from './abstract.entity';
 import { ArticleEntity } from './article.entity';
 import { CommentEntity } from './comment.entity';
@@ -49,13 +50,16 @@ export class UserEntity extends AbstractEntity {
     return await argon2.verify(this.password, password);
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): any {
     return classToPlain(this);
   }
 
-  toProfile(currentUser: UserEntity) {
-    const following = this.followers.includes(currentUser);
+  toProfile(currentUser?: UserEntity): IProfileResponse {
+    let following = false;
     const profile = this.toJSON();
+    if (!!currentUser && !!profile.followers.length) {
+      following = profile.followers.includes(currentUser);
+    }
     delete profile.followers;
     return { ...profile, following };
   }

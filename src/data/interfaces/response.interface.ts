@@ -1,3 +1,3 @@
-export type ResponseObject<K extends string, T> = {
+export type IResponseObject<K extends string, T> = {
   [P in K]: T;
 };
